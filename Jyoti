@@ -1,0 +1,118 @@
+#include <iostream>
+#include <vector>
+#include <string>
+#include <algorithm>
+
+using namespace std;
+
+class Book {
+public:
+    int id;
+    string title;
+    string author;
+    bool isIssued;
+
+    Book(int id, string title, string author) {
+        this->id = id;
+        this->title = title;
+        this->author = author;
+        this->isIssued = false;
+    }
+};
+
+class Library {
+private:
+    vector<Book> books;
+    int nextId;
+
+public:
+    Library() {
+        nextId = 1;
+    }
+
+    void addBook(string title, string author) {
+        books.push_back(Book(nextId++, title, author));
+        cout << "Book added successfully!" << endl;
+    }
+
+    void issueBook(int id) {
+        auto it = find_if(books.begin(), books.end(), [id](Book &b) { return b.id == id; });
+        if (it != books.end() && !it->isIssued) {
+            it->isIssued = true;
+            cout << "Book issued successfully!" << endl;
+        } else {
+            cout << "Book not found or already issued!" << endl;
+        }
+    }
+
+    void returnBook(int id) {
+        auto it = find_if(books.begin(), books.end(), [id](Book &b) { return b.id == id; });
+        if (it != books.end() && it->isIssued) {
+            it->isIssued = false;
+            cout << "Book returned successfully!" << endl;
+        } else {
+            cout << "Book not found or not issued!" << endl;
+        }
+    }
+
+    void displayBooks() {
+        if (books.empty()) {
+            cout << "No books available in the library!" << endl;
+        } else {
+            for (const auto &book : books) {
+                cout << "ID: " << book.id << ", Title: " << book.title << ", Author: " << book.author
+                     << ", Status: " << (book.isIssued ? "Issued" : "Available") << endl;
+            }
+        }
+    }
+};
+
+int main() {
+    Library library;
+    int choice;
+    while (true) {
+        cout << "\nLibrary Management System\n";
+        cout << "1. Add Book\n";
+        cout << "2. Issue Book\n";
+        cout << "3. Return Book\n";
+        cout << "4. Display Books\n";
+        cout << "5. Exit\n";
+        cout << "Enter your choice: ";
+        cin >> choice;
+        cin.ignore();
+
+        switch (choice) {
+            case 1: {
+                string title, author;
+                cout << "Enter book title: ";
+                getline(cin, title);
+                cout << "Enter book author: ";
+                getline(cin, author);
+                library.addBook(title, author);
+                break;
+            }
+            case 2: {
+                int id;
+                cout << "Enter book ID to issue: ";
+                cin >> id;
+                library.issueBook(id);
+                break;
+            }
+            case 3: {
+                int id;
+                cout << "Enter book ID to return: ";
+                cin >> id;
+                library.returnBook(id);
+                break;
+            }
+            case 4:
+                library.displayBooks();
+                break;
+            case 5:
+                return 0;
+            default:
+                cout << "Invalid choice! Please try again." << endl;
+        }
+    }
+    return 0;
+}
